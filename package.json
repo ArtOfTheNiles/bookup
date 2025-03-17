@@ -19,9 +19,15 @@
     "render-start": "npm run server"
   },
   "keywords": [],
-  "authors": ["edX Bootcamp", "Niles Bontrager"],
+  "authors": [
+    "edX Bootcamp",
+    "Niles Bontrager"
+  ],
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "wait-on": "^8.0.3"
+  },
+  "dependencies": {
   }
 }

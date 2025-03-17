@@ -38,7 +38,6 @@ const startApolloServer = async () => {
     });
   }
 
-
   app.listen(PORT, () => {
     console.log(`🌍 Now listening on localhost:${PORT}!`);
     console.log(`GraphQL available at http://localhost:${PORT}/graphql`);

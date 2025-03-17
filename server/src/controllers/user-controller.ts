@@ -7,7 +7,7 @@ import { signToken } from '../services/auth.js';
 // get a single user by either their id or their username
 export const getSingleUser = async (req: Request, res: Response) => {
   const foundUser = await User.findOne({
-    $or: [{ _id: req.user ? req.user._id : req.params.id }, { username: req.params.username }],
+    $or: [{ _id: req.user ? req.user?._id : req.params.id }, { username: req.params.username }],
   });
 
   if (!foundUser) {
@@ -50,7 +50,7 @@ export const login = async (req: Request, res: Response) => {
 export const saveBook = async (req: Request, res: Response) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
+      { _id: req.user?._id },
       { $addToSet: { savedBooks: req.body } },
       { new: true, runValidators: true }
     );
@@ -64,7 +64,7 @@ export const saveBook = async (req: Request, res: Response) => {
 // remove a book from `savedBooks`
 export const deleteBook = async (req: Request, res: Response) => {
   const updatedUser = await User.findOneAndUpdate(
-    { _id: req.user._id },
+    { _id: req.user?._id },
     { $pull: { savedBooks: { bookId: req.params.bookId } } },
     { new: true }
   );

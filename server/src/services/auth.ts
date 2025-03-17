@@ -4,11 +4,11 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-interface JwtPayload {
-  _id: unknown;
-  username: string;
-  email: string,
-}
+// interface JwtPayload {
+//   _id: unknown;
+//   username: string;
+//   email: string,
+// }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -18,12 +18,12 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
     const secretKey = process.env.JWT_SECRET_KEY || '';
 
-    jwt.verify(token, secretKey, (err, user) => {
+    jwt.verify(token, secretKey, (err, _user) => {
       if (err) {
         return res.sendStatus(403); // Forbidden
       }
 
-      req.user = user as JwtPayload;
+      // req.user = user as JwtPayload;
       return next();
     });
   } else {

@@ -1,13 +1,16 @@
 import express from 'express';
 import path from 'node:path';
+import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs, resolvers } from './schemas/index.js';
 
+
 import db from './config/connection.js';
 import routes from './routes/index.js';
+
 
 const server = new ApolloServer({
   typeDefs,
@@ -27,7 +30,26 @@ const startApolloServer = async () => {
 
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use('/graphql', expressMiddleware(server));
+
+  app.use('/graphql', expressMiddleware(server, {
+    context: async ({ req }) => {
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.split(' ')[1];
+      let user = null;
+      
+      if (token) {
+        try {
+          // Verify the token
+          const secretKey = process.env.JWT_SECRET_KEY || '';
+          user = jwt.verify(token, secretKey);
+        } catch (error) {
+          console.error('Authentication error:', error);
+        }
+      }
+      
+      return { user };
+    }
+  }));
   
   app.use(routes);
   if (process.env.NODE_ENV === 'production') {

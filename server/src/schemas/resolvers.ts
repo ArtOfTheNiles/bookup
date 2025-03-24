@@ -1,6 +1,6 @@
 import User, { UserDocument } from '../models/User.js';
 import Book from '../models/Book.js';
-import { signToken } from '../services/auth.js';
+import { authenticateToken, signToken } from '../services/auth.js';
 
 export const resolvers: any = {
 
@@ -40,7 +40,7 @@ export const resolvers: any = {
       if(!correctPw) {
         throw new Error("Incorrect Password"); 
       }
-      const token = signToken(user.username, user.password, user._id);
+      const token = authenticateToken(user.username, user.password, user.id);
       return { token, user };
       }catch (error) {
         throw new Error('Login Error, please check your credentials:\n' + error);

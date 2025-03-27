@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 // serve up react front-end in production
 router.use((_req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+  res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
 });
 
 export default router;

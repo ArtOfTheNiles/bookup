@@ -1,8 +1,11 @@
+import { useQuery, useMutation } from '@apollo/client';
 import { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col } from 'react-bootstrap';
 
-import { getMe, deleteBook } from '../utils/API';
+import { GET_ME } from '../graphql/queries';
+import { REMOVE_BOOK } from '../graphql/mutations';
 import Auth from '../utils/auth';
+// import { deleteBook } from '../utils/API';
 import { removeBookId } from '../utils/localStorage';
 import type { User } from '../models/User';
 

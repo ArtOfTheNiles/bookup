@@ -42,7 +42,10 @@ class AuthService {
   login(idToken: string) {
     // Saves user token to localStorage
     localStorage.setItem('id_token', idToken);
-    window.location.assign('/');
+    // Permit a slight delay for localStorage to update
+    setTimeout(()=>{
+      window.location.assign('/');
+    }, 200);
   }
 
   logout() {

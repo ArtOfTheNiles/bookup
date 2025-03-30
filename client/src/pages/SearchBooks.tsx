@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client';
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import {
@@ -10,10 +11,20 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import type { Book } from '../models/Book';
 import type { GoogleAPIBook } from '../models/GoogleAPIBook';
+import { SAVE_BOOK } from '../graphql/mutations';
+import { GET_ME } from '../graphql/queries';
+
+interface Me {
+  _id: string;
+  username: string;
+  email: string;
+  bookCount: number;
+  savedBooks: Book[];
+}
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -23,6 +34,29 @@ const SearchBooks = () => {
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+
+  const [saveBook] = useMutation(SAVE_BOOK, {
+    // useMutation hook to save a book to the user's account
+    update: (cache, { data: { saveBook } }) => {
+      try {
+        const existingData = cache.readQuery<{ me: Me }>({ query: GET_ME });
+
+        if(existingData?.me) {
+          cache.writeQuery({
+            query: GET_ME,
+            data: {
+              me: {
+                ...existingData.me,
+                savedBooks: [...existingData.me.savedBooks, saveBook]
+              }
+            }
+          })
+        }
+      } catch (error) {
+        console.error('Error reading cache:', error);
+      }
+    }
+  });
 
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
@@ -75,14 +109,19 @@ const SearchBooks = () => {
     }
 
     try {
-      const response = await saveBook(bookToSave, token);
+      const { data } = await saveBook({
+        variables: {
+          bookId: bookToSave.bookId,
+          authors: bookToSave.authors,
+          title: bookToSave.title,
+          description: bookToSave.description,
+          image: bookToSave.image
+        }
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
+      if(data){
+        setSavedBookIds([...savedBookIds, bookToSave.bookId]);
       }
-
-      // if book successfully saves to user's account, save book id to state
-      setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
       console.error(err);
     }

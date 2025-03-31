@@ -1,6 +1,8 @@
 # Bookup
 
-This book search engine is fully functional, but needs to be updated to GraphQL
+This is a book search engine that saves the books you want to read from Google's extensive Book library (book not included!)
+
+Search what you want to read, and leave a bookmark for yourself by saving to your profile. 
 
 
 

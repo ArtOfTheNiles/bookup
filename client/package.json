@@ -11,13 +11,15 @@
     "start": "vite"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.4",
+    "@vitejs/plugin-react": "^4.2.1",
     "bootstrap": "^5.2.3",
+    "graphql-tag": "^2.12.6",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
-    "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.1.6"
   },
   "devDependencies": {

@@ -1,6 +1,14 @@
 import User, { UserDocument } from '../models/User.js';
-import Book from '../models/Book.js';
-import { authenticateToken, signToken } from '../services/auth.js';
+import { signToken } from '../services/auth.js';
+
+interface BookInput {
+  authors?: string[];
+  description: string;
+  bookId: string;
+  image?: string;
+  link?: string;
+  title: string;
+}
 
 export const resolvers: any = {
 
@@ -32,6 +40,9 @@ export const resolvers: any = {
       args: UserDocument
     ) => {
       try {
+
+      console.info('Attempting to login with args:', args);
+
       const user = await User.findOne({ $or: [{ username: args.username }, { email: args.email }] });
       if(!user) {
         throw new Error("Cannot find requested User");
@@ -40,7 +51,9 @@ export const resolvers: any = {
       if(!correctPw) {
         throw new Error("Incorrect Password"); 
       }
-      const token = authenticateToken(user.username, user.password, user.id);
+      console.info('login verified, generating token')
+      const token = signToken(user.username, user.email, user._id);
+      console.info('Token generated:', token ? 'Success ✅' : 'Failed ❌');
       return { token, user };
       }catch (error) {
         throw new Error('Login Error, please check your credentials:\n' + error);
@@ -60,7 +73,7 @@ export const resolvers: any = {
         if (!newUser) {
           throw new Error('Something went wrong! Cannot create user');
         }
-        const token = signToken(newUser.username, newUser.password, newUser._id);
+        const token = signToken(newUser.username, newUser.email, newUser._id);
         return { token, newUser };
       }catch (error) {
         throw new Error('Error creating User:\n' + error);
@@ -69,13 +82,13 @@ export const resolvers: any = {
 
     saveBook: async (
       _:unknown, 
-      { bookData }: { bookData: typeof Book },
+      { bookData }: { bookData: BookInput },
       context: { user?: {_id: string}}
     ) => {
       if (!context.user) {
         throw new Error('You must be logged in to complete this action');
       }
-      
+
       try {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },

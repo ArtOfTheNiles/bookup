@@ -25,6 +25,7 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
       Auth.login(token);
     },
     onError: (error) => {
+      console.info('<<<<<<<<Error during login mutation:');
       console.error(error);
       setShowAlert(true);
     },

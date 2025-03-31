@@ -2,7 +2,9 @@
 import { jwtDecode } from 'jwt-decode';
 
 interface UserToken {
-  name: string;
+  _id: string;
+  username: string;
+  email: string;
   exp: number;
 }
 
@@ -40,6 +42,18 @@ class AuthService {
   }
 
   login(idToken: string) {
+    console.info('>>>>Logging in with token:', 
+      idToken ? `${idToken.substring(0, 10)}... (${idToken.length} chars)` : 'EMPTY');
+
+    // Check if token is decodable before saving
+    try {
+      const decoded = jwtDecode(idToken);
+      console.log('Token decoded successfully:', decoded);
+    } catch (err) {
+      console.error('Failed to decode token:', err);
+      // Continue anyway to see what happens
+    }
+    
     // Saves user token to localStorage
     localStorage.setItem('id_token', idToken);
     // Permit a slight delay for localStorage to update

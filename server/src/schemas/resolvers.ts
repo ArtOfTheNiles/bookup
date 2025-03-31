@@ -68,12 +68,14 @@ export const resolvers: any = {
     },
 
     saveBook: async (
-      _:unknown, bookData: typeof Book,
+      _:unknown, 
+      { bookData }: { bookData: typeof Book },
       context: { user?: {_id: string}}
     ) => {
       if (!context.user) {
         throw new Error('You must be logged in to complete this action');
       }
+      
       try {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },

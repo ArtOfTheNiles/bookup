@@ -87,6 +87,7 @@ const SearchBooks = () => {
         title: book.volumeInfo.title,
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
+        link: `https://www.googleapis.com/books/v1/volumes/${book.id}`,
       }));
 
       setSearchedBooks(bookData);
@@ -101,6 +102,17 @@ const SearchBooks = () => {
     // find the book in `searchedBooks` state by the matching id
     const bookToSave: Book = searchedBooks.find((book) => book.bookId === bookId)!;
 
+    if (!bookToSave || !bookToSave.bookId) {
+      console.error('Book not found');
+      return false;
+    }
+    if(!bookToSave.title) {
+      console.error('Book title not found');
+      return false;
+    }
+
+    console.info('Book to save:', bookToSave);
+
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
@@ -110,13 +122,14 @@ const SearchBooks = () => {
 
     try {
       const { data } = await saveBook({
-        variables: {
-          bookId: bookToSave.bookId,
+        variables: { bookData: { 
           authors: bookToSave.authors,
+          description: bookToSave.description || 'No Description Available',
+          bookId: bookToSave.bookId,
+          image: bookToSave.image || '',
           title: bookToSave.title,
-          description: bookToSave.description,
-          image: bookToSave.image
-        }
+          link: bookToSave.link,
+        } },
       });
 
       if(data){
